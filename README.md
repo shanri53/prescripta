@@ -1,5 +1,5 @@
 Prescripta - AI-Powered Blockchain Prescription System 🏥💊🔗
-Prescripta is an AI-enhanced prescription management system that leverages Hedera Blockchain for secure storage and retrieval of prescriptions. Doctors can issue prescriptions, which are stored immutably on the blockchain, and patients can retrieve them using a unique ID. The system integrates Google Gemini AI to provide insights on medications.
+Prescripta is an AI-enhanced prescription management system that leverages Hedera Blockchain for secure storage and retrieval of prescriptions. Doctors can issue prescriptions, which are stored immutably on the blockchain, and patients can retrieve them using a unique ID. The system integrates Google Gemini AI to provide insights on medications. View Demo here https://prescripta.onrender.com
 
 🚀 Inspiration
 The idea for Prescripta was born out of a personal experience—one of our team members has a friend with a genetic illness, requiring lifelong medication. Witnessing the challenges of managing prescriptions and accessing affordable drugs, we created Prescripta to improve security, accessibility, and transparency in healthcare.
