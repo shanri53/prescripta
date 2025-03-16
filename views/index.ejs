@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prescripta Blockchain + AI</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Particles.js for Animated Background -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+
+    <style>
+        /* Background Effect */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #007bff, #6610f2);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+          
+        }
+
+        /* Particles Effect */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* Glassmorphism Card */
+        .form-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            z-index: 1;
+            margin-top: 80px;
+        }
+
+        /* Floating Labels */
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid white;
+            color: white;
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            transition: 0.3s;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-control:focus ~ .form-label,
+        .form-control:not(:placeholder-shown) ~ .form-label {
+            top: -15px;
+            left: 5px;
+            font-size: 12px;
+            color: #f8f9fa;
+        }
+
+        /* Button Styling */
+        .btn-primary {
+            background: white;
+            color: #007bff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 18px;
+            transition: 0.3s ease-in-out;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background: #f8f9fa;
+            color: #0056b3;
+        }
+
+        /* Result Section */
+        #result {
+            margin-top: 20px;
+            font-weight: 600;
+            text-align: center;
+            color: #f8f9fa;
+        }
+
+        /* AI Response Box */
+#ai-container {
+    position: fixed;
+    bottom: 20px; /* Keeps it near the bottom */
+    right: 20px;
+    width: 350px;
+    max-height: 250px;
+    overflow-y: auto;
+    background: white;
+    color: black;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    display: none; /* Hidden until AI responds */
+}
+
+/* Ensure content doesn't overflow */
+#ai-response {
+    word-wrap: break-word;
+}
+
+    </style>
+</head>
+
+
+<body>
+        <!-- Fixed Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="/">Prescripta</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/prescriptions">Prescriptions</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="patientsDropdown" role="button" data-bs-toggle="dropdown">
+                        Patients
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/retrieve"><i class="fa fa-search"></i> Retrieve Prescription</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    
+    <!-- Particles Effect -->
+    <div id="particles-js"></div>
+
+    <div class="form-card text-center">
+        <h2 class="mb-3"><i class="fa fa-prescription-bottle-alt"></i> Prescripta</h2>
+        <p>Issue Blockchain-Based Prescriptions</p>
+
+        <form id="prescription-form">
+            <input type="text" id="doctorName" class="form-control mb-3" placeholder="Doctor's Name" required>
+            <input type="text" id="patientName" class="form-control mb-3" placeholder="Patient Name" required>
+            <input type="text" id="govNumber" class="form-control mb-3" placeholder="Government Number" required>
+        
+            <select id="gender" class="form-control mb-3" required>
+                <option value="" disabled selected>Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+        
+            <input type="number" id="age" class="form-control mb-3" placeholder="Age" min="0" required>
+        
+            <div id="prescriptions">
+                <div class="prescription-item">
+                    <input type="text" class="form-control mb-2 medicine" placeholder="Medicine" required>
+                    <input type="text" class="form-control mb-2 dosage" placeholder="Dosage (e.g., 2 times a day)" required>
+                </div>
+            </div>
+        
+            <button type="button" id="add-prescription" class="btn btn-success btn-sm mb-3">+ Add Another Prescription</button>
+            <button type="submit" class="btn btn-primary"><i class="fa fa-file-medical"></i> Issue Prescription</button>
+           
+            <div id="prescription-id-container" style="display: none; margin-top: 20px; padding: 15px; background: #ffc107; color: #000; font-size: 18px; font-weight: bold; text-align: center; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);">
+                <p><strong>🆔 Prescription ID:</strong> <span id="prescription-id"></span></p>
+            </div>
+    
+        </form>
+        <div id="result" class="mt-4"></div>
+        
+              
+        
+               
+    
+            </div> 
+            
+       
+
+       
+    </div>
+
+    <!-- AI Response Section -->
+
+    <div id="ai-container" class="ai-box">
+        <h5 class="text-center"><i class="fa fa-robot"></i> AI Analysis</h5>
+        <div id="ai-response"></div>
+    </div>
+    
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Particles.js Configuration -->
+    <script>
+        particlesJS("particles-js", {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#ffffff" },
+                shape: { type: "circle" },
+                opacity: { value: 0.5, random: false, anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false } },
+                size: { value: 3, random: true, anim: { enable: false, speed: 40, size_min: 0.1, sync: false } },
+                line_linked: { enable: true, distance: 150, color: "#ffffff", opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 6, direction: "none", random: false, straight: false, out_mode: "out", bounce: false }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "grab" },
+                    onclick: { enable: true, mode: "push" },
+                    resize: true
+                },
+                modes: {
+                    grab: { distance: 140, line_linked: { opacity: 1 } },
+                    push: { particles_nb: 4 }
+                }
+            },
+            retina_detect: true
+        });
+    </script>
+
+<script>
+
+document.getElementById("prescription-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    // ✅ Collect Input Values
+    const doctorName = document.getElementById("doctorName").value.trim();
+    const patientName = document.getElementById("patientName").value.trim();
+    const govNumber = document.getElementById("govNumber").value.trim();
+    const gender = document.getElementById("gender").value.trim();
+    const age = document.getElementById("age").value.trim();
+
+    // ✅ Collecting Medicines and Dosages
+    const medicineInputs = document.querySelectorAll(".medicine");
+    const dosageInputs = document.querySelectorAll(".dosage");
+
+    const prescriptions = Array.from(medicineInputs).map((input, index) => ({
+        medicine: input.value.trim(),
+        dosage: dosageInputs[index]?.value.trim() || "" // Ensure dosage is not undefined
+    })).filter(p => p.medicine !== "" && p.dosage !== "");
+
+    // ✅ Check If Required Fields Are Filled
+    if (!doctorName || !patientName || !govNumber || !gender || !age || prescriptions.length === 0) {
+        document.getElementById("result").innerHTML = `<p class="text-warning"><i class="fa fa-exclamation-triangle"></i> Please enter all details.</p>`;
+        return;
+    }
+
+    // ✅ Debugging: Check the Data Before Sending
+    console.log("Sending Data:", JSON.stringify({ doctorName, patientName, govNumber, gender, age, prescriptions }));
+
+    // ✅ Sending Data to Server
+    try {
+        const response = await fetch("/issue-prescription", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ doctorName, patientName, govNumber, gender, age, prescriptions }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            document.getElementById("result").innerHTML = `<p class="text-success"><i class="fa fa-check-circle"></i> ✅ Prescription Issued!</p>`;
+
+            // ✅ Show & Highlight Prescription ID
+            document.getElementById("prescription-id").textContent = data.fileId;
+            document.getElementById("prescription-id-container").style.display = "block";
+
+            // ✅ Display AI Response in Fixed Box
+            document.getElementById("ai-container").style.display = "block";
+            document.getElementById("ai-response").innerHTML = `<h5><i class="fa fa-robot"></i> AI Analysis:</h5><p>${data.aiResponse.replace(/\n/g, "<br>")}</p>`;
+        } else {
+            document.getElementById("result").innerHTML = `<p class="text-danger"><i class="fa fa-times-circle"></i> ❌ Error: ${data.error}</p>`;
+        }
+    } catch (error) {
+        document.getElementById("result").innerHTML = `<p class="text-danger"><i class="fa fa-times-circle"></i> ❌ Error: ${error.message}</p>`;
+    }
+});
+
+
+// ✅ Copy Prescription ID
+function copyPrescriptionId() {
+    const prescriptionIdText = document.getElementById("prescription-id").textContent;
+    navigator.clipboard.writeText(prescriptionIdText);
+    alert("📋 Prescription ID copied!");
+}
+
+
+   
+</script>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retrieve Prescription | Prescripta</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Particles.js -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+
+    <style>
+        /* Background Effect */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #007bff, #6610f2);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Particles Effect */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* Glassmorphism Card */
+        .form-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            z-index: 1;
+            text-align: center;
+        }
+
+        /* Button Styling */
+        .btn-primary {
+            background: white;
+            color: #007bff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 18px;
+            transition: 0.3s ease-in-out;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background: #f8f9fa;
+            color: #0056b3;
+        }
+
+        /* Prescription Result Box */
+        #prescription-result-container {
+            display: none;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">Prescripta</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/index">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="patientsDropdown" role="button" data-bs-toggle="dropdown">
+                            Patients
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/retrieve"><i class="fa fa-search"></i> Retrieve Prescription</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Particles Effect -->
+    <div id="particles-js"></div>
+
+    <div class="form-card">
+        <h2 class="mb-3"><i class="fa fa-search"></i> Retrieve Prescription</h2>
+        <p>Enter your Prescription ID to fetch details</p>
+
+        <input type="text" id="fileId" class="form-control mb-3" placeholder="Enter Prescription ID">
+        <button onclick="retrievePrescription()" class="btn btn-primary"><i class="fa fa-file-medical"></i> Retrieve</button>
+
+        <!-- Prescription Result -->
+        <div id="prescription-result-container">
+            <h4><i class="fa fa-file-medical-alt"></i> Prescription Details</h4>
+            <p id="prescription-result"></p>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Particles.js Configuration -->
+    <script>
+        particlesJS("particles-js", {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#ffffff" },
+                shape: { type: "circle" },
+                opacity: { value: 0.5 },
+                size: { value: 3, random: true },
+                move: { enable: true, speed: 6 }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "grab" },
+                    onclick: { enable: true, mode: "push" }
+                },
+                modes: {
+                    grab: { distance: 140, line_linked: { opacity: 1 } },
+                    push: { particles_nb: 4 }
+                }
+            },
+            retina_detect: true
+        });
+    </script>
+
+    <!-- Prescription Retrieval Script -->
+    <script>
+        async function retrievePrescription() {
+            const fileId = document.getElementById("fileId").value.trim();
+
+            if (!fileId) {
+                alert("Please enter a Prescription ID.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`/get-prescription/${fileId}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById("prescription-result").innerHTML = data.prescription.replace(/\n/g, "<br>");
+                    document.getElementById("prescription-result-container").style.display = "block";
+                } else {
+                    document.getElementById("prescription-result").innerHTML = `<span class="text-danger">❌ Error: ${data.error}</span>`;
+                    document.getElementById("prescription-result-container").style.display = "block";
+                }
+            } catch (error) {
+                document.getElementById("prescription-result").innerHTML = `<span class="text-danger">❌ Error: Failed to fetch prescription.</span>`;
+                document.getElementById("prescription-result-container").style.display = "block";
+            }
+        }
+    </script>
+
+</body>
+</html>
