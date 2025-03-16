@@ -12,6 +12,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
     "@hashgraph/sdk": "^2.60.1",
+    "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
     "nodemailer": "^6.10.0",
